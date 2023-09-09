@@ -503,7 +503,7 @@ class HexGUI(Gtk.Window):
             for blue, red, strategy in self.strategy_viewer.stack:
                 available[red] = True
         else:
-            available = self.diagram.available_mask[0]
+            available = self.diagram.available_mask
         if self.diagram.up_edge:
             [ids] = np.nonzero(available[0])
             if ids.size: xs = range(min(ids), max(ids)+2)
