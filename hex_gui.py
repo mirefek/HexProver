@@ -103,7 +103,7 @@ class HexGUI(Gtk.Window):
         self.top_bar.pack_start(self.level_label, False, False, 20)
         self.top_bar.pack_end(self.button_auto_once, False, False, 0)
         self.top_bar.pack_end(self.button_auto, False, False, 0)
-        self.top_bar.pack_end(self.arrow_button, False, False, 0)
+        self.top_bar.pack_end(self.arrow_button, False, False, 10)
         self.top_bar.pack_end(Gtk.Label(label = "First connect:"), False, False, 0)
 
         self.button_auto.connect("clicked", self.toggle_auto)
