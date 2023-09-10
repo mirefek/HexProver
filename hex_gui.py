@@ -75,8 +75,6 @@ class HexGUI(Gtk.Window):
         self.diagram_i = None
         self.auto_close_flag = True
         self.default_connect_up = True
-        
-        self.set_level(start_level-1)
 
         self.bg_color         = (0.9, 0.9, 0.9)
         self.solved_bg_color  = (0.7, 0.9, 0.7)
@@ -96,13 +94,15 @@ class HexGUI(Gtk.Window):
 
         self.vbox = Gtk.VBox()
         self.top_bar = Gtk.HBox()
+        self.level_label = Gtk.Label()
         self.button_auto = Gtk.ToggleButton(label="Automatiion")
         self.button_auto.set_active(self.auto_close_flag)
         self.button_auto_once = Gtk.Button.new_with_label(label = "run once")
-        self.top_bar.pack_start(self.button_auto, False, False, 0)
-        self.top_bar.pack_start(self.button_auto_once, False, False, 0)
         self.arrow_button = Gtk.Button()
         self.update_arrow_button()
+        self.top_bar.pack_start(self.level_label, False, False, 20)
+        self.top_bar.pack_end(self.button_auto_once, False, False, 0)
+        self.top_bar.pack_end(self.button_auto, False, False, 0)
         self.top_bar.pack_end(self.arrow_button, False, False, 0)
         self.top_bar.pack_end(Gtk.Label(label = "First connect:"), False, False, 0)
 
@@ -118,6 +118,8 @@ class HexGUI(Gtk.Window):
         self.darea.connect("button-release-event", self.on_button_release)
         self.darea.connect("motion-notify-event", self.on_motion)
         self.connect("key-press-event", self.on_key_press)
+
+        self.set_level(start_level-1)
 
         self.set_title("Hex Puzzle")
         self.resize(*win_size)
@@ -199,6 +201,7 @@ class HexGUI(Gtk.Window):
         if diagram_i < 0: diagram_i = 0
         if diagram_i >= len(self.diagrams): diagram_i = len(self.diagrams)-1
         if diagram_i == self.diagram_i: return
+        self.level_label.set_label(f"Problem {diagram_i+1}")
         self.diagram_i = diagram_i
         diagram = self.diagrams[diagram_i]
         self.strategy_viewer = None
