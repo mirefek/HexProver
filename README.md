@@ -2,7 +2,8 @@
 
 Interactive prover of [Hex](https://en.wikipedia.org/wiki/Hex_(board_game)) diagrams.
 
-![Internal connection example](images/internal_connection.png) ![Strategy Viewer example](images/view_strategy.png) 
+![Internal connection example](images/internal_connection.png)
+![Strategy Viewer example](images/view_strategy.png) 
 
 ## Dependencies
 + Python3
@@ -18,7 +19,7 @@ To check it out, run
 
 and you should see an example of [Tom's move](https://www.hexwiki.net/index.php/Tom%27s_move), where you can play red hexes.
 
-![Internal connection example](images/internal_connection.png) ![Strategy Viewer example](images/view_strategy.png) 
+![Initial position](images/internal_connection.png)
 
 ## Concept
 
