@@ -2,8 +2,9 @@
 
 Interactive prover of [Hex](https://en.wikipedia.org/wiki/Hex_(board_game)) diagrams.
 
-![Internal connection example](images/internal_connection.png)
-![Strategy Viewer example](images/view_strategy.png) 
+![Internal connection example](screenshots/internal_connection.png)
+
+![Strategy Viewer example](/screenshots/view_strategy.png) 
 
 ## Dependencies
 + Python3
@@ -19,7 +20,7 @@ To check it out, run
 
 and you should see an example of [Tom's move](https://www.hexwiki.net/index.php/Tom%27s_move), where you can play red hexes.
 
-![Initial position](images/internal_connection.png)
+![Initial position](screenshots/start.png)
 
 ## Concept
 
@@ -65,4 +66,4 @@ Automation can be turned On / Off by the appropriate button in the top bar. It c
 HexProver uses its custom text-like `.hdg` format for Hex templates, as can be seen in
 [custom.hdg](custom.hdg) or [templates-drking.hdg](templates-drking.hdg), the latter is the list of templates by [David King](https://www.drking.org.uk/hexagons/hex/templates.html). Its use should be fairly intuitive -- only note that there must not be any hole (written by space) in a line. If there should be, write `X` instead.
 
-HexProver is also capable of parsing some problems by [http://www.mseymour.ca/hex_puzzle/](Matthew Seymour's Hex puzzles) -- in particular those puzzles where the objective is to connect, and the first player is supposed to pass. To load them, download [Puzzle Data](http://www.mseymour.ca/hex_puzzle/puzzle_data.js), extract the inside of `puzzle_data = '...'` into a file `puzzle_data.json` (the `json` extension is important), and run HexProver on that file.
+HexProver is also capable of parsing some problems by [Matthew Seymour's Hex puzzles](http://www.mseymour.ca/hex_puzzle/) -- in particular those puzzles where the objective is to connect, and the first player is supposed to pass. To load them, download [Puzzle Data](http://www.mseymour.ca/hex_puzzle/puzzle_data.js), extract the inside of `puzzle_data = '...'` into a file `puzzle_data.json` (the `json` extension is important), and run HexProver on that file.
