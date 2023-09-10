@@ -426,13 +426,26 @@ class GoalEnv:
         for node in self.cur.empty_nodes:
             if frozenset((node, up_node)) not in self.cur.edges: continue
             if frozenset((node, down_node)) not in self.cur.edges: continue
-            nodes.append(node)
+            [pos] = self.cur.components[node]
 
+            # prefer forks that appeared recently
+            penalty = 0
+            for builder in self.stack:
+                if builder.main.available_mask[pos]:
+                    local_node = builder.main.pos_to_node[pos]
+                    local_edge0 = frozenset((local_node, builder.main.up_node))
+                    local_edge1 = frozenset((local_node, builder.main.down_node))
+                    local_edges = builder.main.edges
+                    if local_edge0 in local_edges and local_edge1 in local_edges:
+                        penalty += 1
+            nodes.append((penalty, node))
+
+        nodes.sort()
+        nodes = [node for score, node in nodes]
         if self.waiting_for_thm:
             if len(nodes) < 2: return False
             if self.debug:
                 print(f"assert env.close_with_fork()")
-            nodes.sort()
             node1, node2 = nodes[:2]
             self.cur.add_theorem(self.fork.map_nodes([
                 up_node, node1, node2, down_node
