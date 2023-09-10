@@ -60,6 +60,7 @@ Automation can be turned On / Off by the appropriate button in the top bar. It c
 * Left click -- in proving mode either split on red node, or play red node, in viewing strategy play blue node
 * Mouse drag from a red not to another -- make internal connection
 * Right click -- Select current opponent's (blue) move
+* Backspace -- return a move, this may discard a part of the examined game tree but it remains remembered by the lemmas
 
 ## Data format
 
