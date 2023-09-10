@@ -133,6 +133,7 @@ class InternalConnection:
         down_mask[self.pos2] = True
         kwargs['up_mask'] = up_mask
         kwargs['down_mask'] = down_mask
+        kwargs['red_mask'] = self.main.up_mask | self.main.down_mask | self.main.red_mask
         self.cur = HexDiagram(**kwargs)
     def _build_external_goal(self):
         kwargs = dict(self.main.kwargs)
