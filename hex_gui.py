@@ -176,6 +176,9 @@ class HexGUI(Gtk.Window):
 
     def load_proof(self):
         self.loading_proof = True
+        if self.diagram.thm is not None:
+            self.env._finish()
+            return
         fname = self.get_proof_fname()
         if os.path.exists(fname):
             try:
