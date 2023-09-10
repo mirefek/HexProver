@@ -634,5 +634,11 @@ if __name__ == "__main__":
     base_name = os.path.basename(config.file_name)
     pack_name = base_name[:len(base_name)-len(suffix)]
 
-    win = HexGUI(diagrams, pack_name, proof_dir = config.proof_dir, debug = config.debug)
+    win = HexGUI(
+        diagrams,
+        pack_name,
+        start_level = config.start_level,
+        proof_dir = config.proof_dir,
+        debug = config.debug,
+    )
     Gtk.main()

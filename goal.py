@@ -117,7 +117,11 @@ class InternalConnection:
             # split the red node into transitivity
             self._extract_external_thm()
             self.cur = None
-            self.main.add_theorem(self._external_thm & self._internal_thm)
+            [final_connection] = self._internal_thm.clause.corollaries
+            if final_connection in self._external_thm.clause.assumptions:
+                self.main.add_theorem(self._external_thm & self._internal_thm)
+            else:
+                self.main.add_theorem(self._external_thm)
 
     def _build_internal_goal(self):
         kwargs = dict(self.main.kwargs)
@@ -333,7 +337,7 @@ class GoalEnv:
         if debug:
             print('diagram = HexDiagram.parse("""')
             print(goal_diagram.to_str())
-            print('"""')
+            print('""")')
             print("env = GoalEnv(diagram)")
 
     @property
@@ -446,7 +450,7 @@ class GoalEnv:
             return False
 
     def pop_stack(self):
-        if not self.stack: return
+        if not self.stack: return False
         if self.debug: print(f"assert env.pop_stack()")
         last = self.stack[-1]
         if isinstance(last, BuildCases) and last.waiting_for_thm:
@@ -457,6 +461,7 @@ class GoalEnv:
 
         self.stack.pop()
         self._finish()
+        return True
 
     def _finish(self, save_first = True):
         if self.finished: return
@@ -497,30 +502,24 @@ if __name__ == "__main__":
     board6 = make_board(6,(2,3))
 
     diagram = HexDiagram.parse("""
-    ------------
-      .   .   .
-        .   .   O
-          O   .   .
-            .   .   .
-           -----------
+    -------------------
+     .   .   .   .   . 
+       .   X   O   .   . 
+         .   .   .   .   . 
+           .   O   .   V 
     """)
     env = GoalEnv(diagram)
-
-    env.internal_connection((1, 2), (2, 0))
-    env.make_red_move((1, 1))
-    env.make_red_move((2, 1))
+    env.make_red_move((1, 4))
+    env.split_node((1, 4), True)
+    assert env.pop_stack()
+    env.split_node((1, 4), False)
+    assert env.close_with_fork()
+    env.internal_connection((1, 2), (3, 1))
+    assert env.close_with_fork()
     env.split_node((1, 2), True)
-    env.make_red_move((0, 2))
-    env.make_red_move((1, 0))
-    env.make_red_move((0, 1))
-    env.make_red_move((0, 0))
-    env.make_red_move((3, 0))
-    env.make_red_move((2, 2))
-    env.make_red_move((3, 1))
-    env.make_red_move((3, 2))
+    assert env.close_with_fork()
+    assert env.close_with_fork()
 
-    export_proof_to_file(env.main.thm, "example.hpf")
-    
     if env.finished:
         print("Problem solved!")
         print(env.main)
