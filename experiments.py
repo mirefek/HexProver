@@ -199,3 +199,10 @@ def prove_tom():
 tom = prove_tom()
 print("Tom's Move")
 print(tom)
+
+import random
+
+for _ in range(100):
+    homo = [random.randint(0,50) for n in range(tom.num_nodes)]
+    print(homo)
+    thm = tom.thm.map_nodes(homo, conflict_to_red = True)

@@ -46,12 +46,13 @@ class StrategyCases:
         new_to_ori = [
             ni
             for ni in range(len(self.node_tuple))
-            if self.node_tuple[ni] not in to_ignore
+            if ni not in to_ignore
         ]
 
-        ori_to_new = [0]*len(self.node_tuple)
-        for new,ori in enumerate(new_to_ori):
-            ori_to_new[ori] = new
+        ori_to_new = {
+            ori : new
+            for new,ori in enumerate(new_to_ori)
+        }
 
         next_actions = []
         for blue, (red, strategy) in enumerate(actions):
