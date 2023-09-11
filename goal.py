@@ -411,7 +411,7 @@ class GoalEnv:
             return False
         thm = self.lemma_database.find(self.cur, include_red = include_red)
         if thm is not None:
-            if self.debug: print(f"assert env.close_with_lemma()")
+            if self.debug: print(f"assert env.close_with_lemma({include_red})")
             self.cur.add_theorem(thm)
             self._finish(save_first = False)
             return True
@@ -471,7 +471,7 @@ class GoalEnv:
             if last._tried_moves:
                 last.remove_move()
                 self._finish()
-                return
+                return True
 
         self.stack.pop()
         self._finish()
