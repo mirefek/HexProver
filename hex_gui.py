@@ -213,7 +213,7 @@ class HexGUI(Gtk.Window):
         proof_fname = self.get_proof_fname()
         self.load_proof()
         self.auto_close()
-        if self.diagram_i == 3 and self.pack_name == "custom":
+        if self.diagram_i == 3 and self.pack_name == "custom" and self.diagram.thm is None:
             thibault_position(self.env)
 
     def pixel_to_coor(self, pixel):
