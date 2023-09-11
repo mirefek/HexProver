@@ -224,10 +224,10 @@ class HexGUI(Gtk.Window):
             for _ in replay_iter: pass
         else:
             GLib.timeout_add(1000 / self.replay_fps, self.replay_step, replay_iter)
-
     def replay_step(self, replay_iter):
         repeat = next(replay_iter)
         self.darea.queue_draw()
+        if not repeat: print("# replay finished")
         return repeat
 
     def pixel_to_coor(self, pixel):
