@@ -10,6 +10,7 @@ from hex_diagram import HexDiagram, positions_true
 from load_puzzles import HexPuzzle
 from goal import GoalEnv, BuildSplit, BuildCases
 from save_proof import export_proof_to_file, load_proof_from_file
+from thibault_debug import thibault_position
 
 class StrategyViewer:
     def __init__(self, diagram):
@@ -73,7 +74,7 @@ class HexGUI(Gtk.Window):
         self.drag_tolerance = 20 # square distance in pixels to consider a click a drag
         self.diagrams = diagrams
         self.diagram_i = None
-        self.auto_close_flag = True
+        self.auto_close_flag = False
         self.default_connect_up = True
 
         self.bg_color         = (0.9, 0.9, 0.9)
@@ -212,6 +213,8 @@ class HexGUI(Gtk.Window):
         proof_fname = self.get_proof_fname()
         self.load_proof()
         self.auto_close()
+        if self.diagram_i == 3 and self.pack_name == "custom":
+            thibault_position(self.env)
 
     def pixel_to_coor(self, pixel):
         x,y = pixel
