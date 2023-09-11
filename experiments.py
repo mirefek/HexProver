@@ -204,5 +204,5 @@ import random
 
 for _ in range(100):
     homo = [random.randint(0,50) for n in range(tom.num_nodes)]
-    print(homo)
+    # print(homo)
     thm = tom.thm.map_nodes(homo, conflict_to_red = True)
