@@ -50,7 +50,16 @@ class Theorem:
                 y = homo.get(x,x)
                 if y in used: double.add(y)
                 else: used.add(y)
-            if double: thm = self.release_red_nodes(double)
+            if double:
+                double_src = [
+                    x
+                    for x in self.strategy.nodes
+                    if homo.get(x,x) in double
+                ]
+                # print(thm)
+                # print(double_src)
+                thm = self.release_red_nodes(double_src)
+                # print(thm)
 
         return thm_map_nodes(thm, homo)
 

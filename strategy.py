@@ -15,14 +15,35 @@ class StrategyCases:
         )
 
     def ignore_nodes(self, nodes):
+        # print()
+        # print(">>>")
+        # for blue,(red,strategy) in enumerate(self.blue_to_action):
+        #     blue = self.node_tuple[blue]
+        #     red = self.node_tuple[red]
+        #     strategy_nodes = [self.node_tuple[x] for x in sorted(strategy.nodes)]
+        #     print(f"{blue} -> {red}, {strategy_nodes}")
+        # print(self.node_tuple)
+        # print()
+        # print("raw")
+        # for blue,(red,strategy) in enumerate(self.blue_to_action):
+        #     print(f"{blue} -> {red}, {strategy.nodes}")
+        # print(self.node_tuple)
+        # print()
         to_ignore = [i for i,n in enumerate(self.node_tuple) if n in nodes]
-        if len(to_ignore) == len(self.node_tuple): return None
+        if len(to_ignore) == len(self.node_tuple):
+            # print("<<< 0\n")
+            return None
         actions = list(set(self.blue_to_action))
         action_to_i = { action : i for i,action in enumerate(actions) }
         action_i_to_blues = [set() for action in actions]
         for blue, action in enumerate(self.blue_to_action):
             action_i_to_blues[action_to_i[action]].add(blue)
         node_i_to_action_i = [action_to_i[self.blue_to_action[ni]] for ni in range(len(self.node_tuple))]
+
+        # print("summarized")
+        # for (red,strategy), blues in zip(actions, action_i_to_blues):
+        #     print(f"{blues} -> {red}, {strategy.nodes}")
+        # print()
 
         to_ignore = set(to_ignore)
         for blues in action_i_to_blues:
@@ -36,6 +57,7 @@ class StrategyCases:
             else:
                 remaining_strategy_nodes = strategy.nodes - to_ignore
                 if not remaining_strategy_nodes:
+                    # print("<<< 0\n")
                     return None
                 else:
                     red = min(remaining_strategy_nodes)
@@ -43,15 +65,24 @@ class StrategyCases:
                     next_actions.append((red, strategy))
         actions = next_actions
 
+        # print("next_actions")
+        # for (red,strategy), blues in zip(actions, action_i_to_blues):
+        #     print(f"{blues} -> {red}, {strategy.nodes}")
+        # print()
+
         new_to_ori = [
             ni
             for ni in range(len(self.node_tuple))
-            if self.node_tuple[ni] not in to_ignore
+            if ni not in to_ignore
         ]
+        # print(f"new_to_ori skipping {to_ignore} -- originally {nodes}")
+        # print(new_to_ori)
+        # print()
 
-        ori_to_new = [0]*len(self.node_tuple)
-        for new,ori in enumerate(new_to_ori):
-            ori_to_new[ori] = new
+        ori_to_new = {
+            ori : new
+            for new,ori in enumerate(new_to_ori)
+        }
 
         next_actions = []
         for blue, (red, strategy) in enumerate(actions):
@@ -59,9 +90,22 @@ class StrategyCases:
             next_actions.append((ori_to_new[red], strategy))
         actions = next_actions
 
+        # print("translated")
+        # for (red,strategy), blues in zip(actions, action_i_to_blues):
+        #     print(f"{blues} -> {red}, {strategy.nodes}")
+        # print()
+
         node_tuple = [self.node_tuple[ori] for ori in new_to_ori]
         blue_to_action = [actions[node_i_to_action_i[ori]] for ori in new_to_ori]
-        return strategy_cases(node_tuple, blue_to_action)
+        for blue,(red,strategy) in enumerate(blue_to_action):
+            blue = node_tuple[blue]
+            red = node_tuple[red]
+            strategy_nodes = [node_tuple[x] for x in sorted(strategy.nodes)]
+            # print(f"{blue} -> {red}, {strategy_nodes}")
+        res = strategy_cases(node_tuple, blue_to_action)
+        # print(res.node_tuple)
+        # print("<<<\n")
+        return res
 
 class StrategyCombined:
     def __init__(self, strategies, nodes):

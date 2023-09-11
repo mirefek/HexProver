@@ -1,6 +1,7 @@
 from prop_logic import atom_connected
 from hex_diagram import *
 import logic_core as core
+import random
 
 #  0 - 1 - 2
 #  3 - 4 - 5
@@ -199,3 +200,17 @@ def prove_tom():
 tom = prove_tom()
 print("Tom's Move")
 print(tom)
+
+tom.thm.strategy.ignore_nodes([6])
+tom.thm.strategy.ignore_nodes([6, 7, 8])
+
+homo = [1, 40, 18, 35, 34, 30, 17, 0, 5, 12, 16, 28, 0, 17, 5, 1, 5, 45, 41, 11, 43, 17, 45, 3, 20, 31]
+tom.thm.map_nodes(homo, conflict_to_red = True)
+
+homo = [42, 0, 6, 0, 16, 38, 13, 10, 7, 4]
+ziggurat.thm.map_nodes(homo, conflict_to_red = True)
+
+for _ in range(100):
+    homo = [random.randint(0,50) for n in range(tom.num_nodes)]
+    print(homo)
+    thm = tom.thm.map_nodes(homo, conflict_to_red = True)
