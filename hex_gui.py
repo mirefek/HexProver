@@ -10,7 +10,7 @@ from hex_diagram import HexDiagram, positions_true
 from load_puzzles import HexPuzzle
 from goal import GoalEnv, BuildSplit, BuildCases
 from save_proof import export_proof_to_file, load_proof_from_file
-from thibault_debug import thibault_position
+from thibault_debug_yield import thibault_position
 
 class StrategyViewer:
     def __init__(self, diagram):
@@ -63,7 +63,7 @@ class StrategyViewer:
 
 class HexGUI(Gtk.Window):
 
-    def __init__(self, diagrams, pack_name, start_level = 1, proof_dir = "./proofs", win_size = (800, 600), start_dl_i = 0, debug = False):
+    def __init__(self, diagrams, pack_name, start_level = 1, proof_dir = "./proofs", win_size = (800, 600), start_dl_i = 0, debug = False, replay_fps = None):
         
         super(HexGUI, self).__init__()
 
@@ -76,6 +76,7 @@ class HexGUI(Gtk.Window):
         self.diagram_i = None
         self.auto_close_flag = False
         self.default_connect_up = True
+        self.replay_fps = replay_fps
 
         self.bg_color         = (0.9, 0.9, 0.9)
         self.solved_bg_color  = (0.7, 0.9, 0.7)
@@ -214,7 +215,20 @@ class HexGUI(Gtk.Window):
         self.load_proof()
         self.auto_close()
         if self.diagram_i == 3 and self.pack_name == "custom" and self.diagram.thm is None:
-            thibault_position(self.env)
+            self.start_replay()
+
+
+    def start_replay(self):
+        replay_iter = thibault_position(self.env)
+        if self.replay_fps is None:
+            for _ in replay_iter: pass
+        else:
+            GLib.timeout_add(1000 / self.replay_fps, self.replay_step, replay_iter)
+
+    def replay_step(self, replay_iter):
+        repeat = next(replay_iter)
+        self.darea.queue_draw()
+        return repeat
 
     def pixel_to_coor(self, pixel):
         x,y = pixel
@@ -623,6 +637,7 @@ if __name__ == "__main__":
     cmd_parser.add_argument("--debug", action = "store_true", help="print out all the actions done in the environment")
     cmd_parser.add_argument("--start_level", type = int, default = 1, help="number of the diagram displayed at start")
     cmd_parser.add_argument("--proof_dir", type = str, default = "./proofs", help="directory storing the proof files")
+    cmd_parser.add_argument("--replay_fps", type = int, default = None, help="the speed of showing partial solution to 7 x 7")
     config = cmd_parser.parse_args()
     
     if config.file_name.endswith('.hdg'):
@@ -649,5 +664,6 @@ if __name__ == "__main__":
         start_level = config.start_level,
         proof_dir = config.proof_dir,
         debug = config.debug,
+        replay_fps = config.replay_fps,
     )
     Gtk.main()

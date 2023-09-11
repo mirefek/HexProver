@@ -111,13 +111,13 @@ class HexPuzzle:
         return [HexPuzzle.parse_js_dict(x) for x in data if not x.get("tutorial")]
 
 if __name__ == "__main__":
-    puzzles = HexPuzzle.parse_file("../puzzles/puzzle_data.js")
+    puzzles = HexPuzzle.parse_file("../puzzles/puzzle_data.json")
     puzzle_diagrams = [
         (i, puzzle.diagram)
         for i,puzzle in enumerate(puzzles)
         if puzzle.start_red and puzzle.first_pass
     ]
-    index, diagram = puzzle_diagrams[57-1]
+    index, diagram = puzzle_diagrams[85-1]
     print(index+1)
     print(diagram)
     # for puzzle in puzzles:
