@@ -498,6 +498,9 @@ class GoalEnv:
             if self.finished_trigger is not None:
                 self.finished_trigger()
 
+        if isinstance(self.last, BuildCases):
+            assert self.last._cur_red is not None or self.last._cur_blue is not None
+
 if __name__ == "__main__":
     from save_proof import export_proof_to_file
 
