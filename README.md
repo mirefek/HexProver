@@ -54,13 +54,15 @@ Automation can be turned On / Off by the appropriate button in the top bar. It c
 
 ## Controls
 
-* Escape -- exit the program. Note that the program remembers which problems were solved (in `./proof` directory) but not partial 
+* Escape -- exit the program.
 * PgUp / PgDown -- select problem. Warning: when a problem is changed, all the proving progress is lost. (except when the problem has been fully solved)
 * 'a' / 's' -- toggle automation / run once
 * Left click -- in proving mode either split on red node, or play red node, in viewing strategy play blue node
 * Mouse drag from a red not to another -- make internal connection
 * Right click -- Select current opponent's (blue) move
 * Backspace -- return a move, this may discard a part of the examined game tree but it remains remembered by the lemmas
+* F2 -- save the current progress (steps made so far)
+* F3 -- load the saved progress (steps made so far)
 
 ## Data format
 

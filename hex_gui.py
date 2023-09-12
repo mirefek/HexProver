@@ -62,14 +62,13 @@ class StrategyViewer:
 
 class HexGUI(Gtk.Window):
 
-    def __init__(self, diagrams, pack_name, start_level = 1, proof_dir = "./proofs", win_size = (800, 600), start_dl_i = 0, debug = False):
+    def __init__(self, diagrams, pack_name, start_level = 1, proof_dir = "./proofs", win_size = (800, 600), start_dl_i = 0):
         
         super(HexGUI, self).__init__()
 
         self.proof_dir = proof_dir
         self.pack_name = pack_name
 
-        self.debug = debug
         self.drag_tolerance = 20 # square distance in pixels to consider a click a drag
         self.diagrams = diagrams
         self.diagram_i = None
@@ -162,6 +161,8 @@ class HexGUI(Gtk.Window):
         self.strategy_viewer = StrategyViewer(self.diagram)
         if not self.loading_proof: self.save_proof()
 
+    def get_steps_fname(self):
+        return os.path.join(self.proof_dir, f"{self.pack_name}_{self.diagram_i+1}_steps.pkl")
     def get_proof_fname(self):
         return os.path.join(self.proof_dir, f"{self.pack_name}_{self.diagram_i+1}.hpf")
 
@@ -169,10 +170,6 @@ class HexGUI(Gtk.Window):
         os.makedirs(self.proof_dir, exist_ok = True)
         fname = self.get_proof_fname()
         export_proof_to_file(self.diagram.thm, fname)
-        if self.debug:
-            print()
-            print(f"# Proof saved to '{fname}'")
-            print()
 
     def load_proof(self):
         self.loading_proof = True
@@ -188,10 +185,6 @@ class HexGUI(Gtk.Window):
                 thm = None
             if thm is not None:
                 if thm.clause <= self.diagram.clause:
-                    if self.debug:
-                        print()
-                        print(f"# Proof loaded from '{fname}'")
-                        print()
                     self.diagram.add_theorem(thm)
                     self.env._finish()
                 else:
@@ -199,6 +192,14 @@ class HexGUI(Gtk.Window):
                     print(thm)
                     print(self.diagram.clause)
         self.loading_proof = False
+
+    def save_steps(self):
+        if not self.env.steps: return
+        self.env.save_steps(self.get_steps_fname())
+        print("Steps saved")
+    def load_steps(self):
+        if self.env.finished: return
+        self.env.load_steps(self.get_steps_fname())
 
     def set_level(self, diagram_i):
         if diagram_i < 0: diagram_i = 0
@@ -208,7 +209,7 @@ class HexGUI(Gtk.Window):
         self.diagram_i = diagram_i
         diagram = self.diagrams[diagram_i]
         self.strategy_viewer = None
-        self.env = GoalEnv(diagram, finished_trigger = self.finished_trigger, debug = self.debug)
+        self.env = GoalEnv(diagram, finished_trigger = self.finished_trigger)
         proof_fname = self.get_proof_fname()
         self.load_proof()
         self.auto_close()
@@ -370,6 +371,12 @@ class HexGUI(Gtk.Window):
         # print(keyval_name)
         if keyval_name == 'Escape':
             Gtk.main_quit()
+        if keyval_name == 'F2':
+            self.save_steps()
+            self.update()
+        if keyval_name == 'F3':
+            self.load_steps()
+            self.update()
         elif keyval_name == 'BackSpace':
             if self.env.finished:
                 self.strategy_viewer.undo()
@@ -617,7 +624,6 @@ if __name__ == "__main__":
                                      description='interactive prover of Hex templates',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     cmd_parser.add_argument("file_name", type=str, help="file with hex diagrams, expected 'hdg' or 'json'")
-    cmd_parser.add_argument("--debug", action = "store_true", help="print out all the actions done in the environment")
     cmd_parser.add_argument("--start_level", type = int, default = 1, help="number of the diagram displayed at start")
     cmd_parser.add_argument("--proof_dir", type = str, default = "./proofs", help="directory storing the proof files")
     config = cmd_parser.parse_args()
@@ -645,6 +651,5 @@ if __name__ == "__main__":
         pack_name,
         start_level = config.start_level,
         proof_dir = config.proof_dir,
-        debug = config.debug,
     )
     Gtk.main()

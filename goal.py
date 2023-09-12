@@ -1,6 +1,7 @@
 from prop_logic import AtomConnected
 from hex_diagram import *
 from lemma import LemmaDatabase
+import pickle
 
 class BuildSplit:
     def __init__(self, goal, pos, first_connect_up):
@@ -323,23 +324,21 @@ class BuildCases:
         self.cur = None
 
 class GoalEnv:
-    def __init__(self, goal_diagram, finished_trigger = None, debug = False):
+    def __init__(self, goal_diagram, finished_trigger = None):
+        self.steps = []
         self.main = goal_diagram
-        self.cur = goal_diagram
-        self.stack = []
-        self.lemma_database = LemmaDatabase(goal_diagram)
-        self.debug = debug
         self.fork = core.build_case_strategy(
             1, core.transitivity(0,1,3),
             2, core.transitivity(0,2,3),
         )
-        self.finished = False
+        self.initialize()
         self.finished_trigger = finished_trigger
-        if debug:
-            print('diagram = HexDiagram.parse("""')
-            print(goal_diagram.to_str())
-            print('""")')
-            print("env = GoalEnv(diagram)")
+
+    def initialize(self):
+        self.cur = self.main
+        self.stack = []
+        self.lemma_database = LemmaDatabase(self.main)
+        self.finished = False
 
     @property
     def waiting_for_thm(self):
@@ -359,18 +358,20 @@ class GoalEnv:
 
     def split_node(self, pos, first_connect_up = True):
         pos = self.to_pos(pos)
-        if self.debug: print(f"env.split_node({pos}, {first_connect_up})")
+        self.steps.append(("split_node", pos, first_connect_up))
         assert self.waiting_for_thm
         self.stack.append(BuildSplit(self.cur, pos, first_connect_up))
         self._finish()
+        return True
 
     def internal_connection(self, pos1, pos2):
         pos1 = self.to_pos(pos1)
         pos2 = self.to_pos(pos2)
-        if self.debug: print(f"env.internal_connection({pos1}, {pos2})")
+        self.steps.append(("internal_connection", pos1, pos2))
         assert self.waiting_for_thm
         self.stack.append(InternalConnection(self.cur, pos1, pos2))
         self._finish()
+        return True
 
     def _get_cases_builder(self):
         if self.waiting_for_thm:
@@ -383,17 +384,19 @@ class GoalEnv:
 
     def make_red_move(self, pos):
         pos = self.to_pos(pos)
-        if self.debug: print(f"env.make_red_move({pos})")
+        self.steps.append(("make_red_move", pos))
         assert not self.finished
         self._get_cases_builder().make_red_move(pos)
         self._finish()
+        return True
 
     def make_blue_move(self, pos):
         pos = self.to_pos(pos)
-        if self.debug: print(f"env.make_blue_move({pos})")
+        self.steps.append(("make_blue_move", pos))
         assert not self.finished
         self._get_cases_builder().make_blue_move(pos)
         self._finish()
+        return True
 
     def close_with_proven(self, proven_diagram, transform):
         assert self.waiting_for_thm
@@ -405,13 +408,14 @@ class GoalEnv:
 
         self.cur.add_theorem(thm)
         self._finish()
+        return True
 
     def close_with_lemma(self, include_red):
         if not self.waiting_for_thm:
             return False
         thm = self.lemma_database.find(self.cur, include_red = include_red)
         if thm is not None:
-            if self.debug: print(f"assert env.close_with_lemma({include_red})")
+            self.steps.append(("close_with_lemma", include_red))
             self.cur.add_theorem(thm)
             self._finish(save_first = False)
             return True
@@ -444,8 +448,7 @@ class GoalEnv:
         nodes = [node for score, node in nodes]
         if self.waiting_for_thm:
             if len(nodes) < 2: return False
-            if self.debug:
-                print(f"assert env.close_with_fork()")
+            self.steps.append(("close_with_fork",))
             node1, node2 = nodes[:2]
             self.cur.add_theorem(self.fork.map_nodes([
                 up_node, node1, node2, down_node
@@ -465,7 +468,7 @@ class GoalEnv:
 
     def pop_stack(self):
         if not self.stack: return False
-        if self.debug: print(f"assert env.pop_stack()")
+        self.steps.append(("pop_stack", ))
         last = self.stack[-1]
         if isinstance(last, BuildCases) and last.waiting_for_thm:
             if last._tried_moves:
@@ -497,6 +500,18 @@ class GoalEnv:
             self.cur = None
             if self.finished_trigger is not None:
                 self.finished_trigger()
+
+    def save_steps(self, fname):
+        with open(fname, 'wb') as f:
+            pickle.dump(self.steps, f)
+
+    def load_steps(self, fname):
+        with open(fname, 'rb') as f:
+            steps = pickle.load(f)
+        self.initialize()
+        for f,*args in steps:
+            f = getattr(self, f)
+            f(*args)
 
 if __name__ == "__main__":
     from save_proof import export_proof_to_file
