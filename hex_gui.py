@@ -62,7 +62,7 @@ class StrategyViewer:
 
 class HexGUI(Gtk.Window):
 
-    def __init__(self, diagrams, pack_name, start_level = 1, proof_dir = "./proofs", win_size = (800, 600), start_dl_i = 0):
+    def __init__(self, diagrams, pack_name, start_level, proof_dir, auto_close_flag, win_size = (800, 600)):
         
         super(HexGUI, self).__init__()
 
@@ -72,7 +72,7 @@ class HexGUI(Gtk.Window):
         self.drag_tolerance = 20 # square distance in pixels to consider a click a drag
         self.diagrams = diagrams
         self.diagram_i = None
-        self.auto_close_flag = True
+        self.auto_close_flag = auto_close_flag
         self.default_connect_up = True
 
         self.bg_color         = (0.9, 0.9, 0.9)
@@ -118,7 +118,13 @@ class HexGUI(Gtk.Window):
         self.darea.connect("motion-notify-event", self.on_motion)
         self.connect("key-press-event", self.on_key_press)
 
-        self.set_level(start_level-1)
+        if start_level is None:
+            diagram_i = 0
+            while os.path.exists(self.get_proof_fname(diagram_i)):
+                diagram_i += 1
+        else:
+            diagram_i = start_level-1
+        self.set_level(diagram_i)
 
         self.set_title("Hex Puzzle")
         self.resize(*win_size)
@@ -163,8 +169,9 @@ class HexGUI(Gtk.Window):
 
     def get_steps_fname(self):
         return os.path.join(self.proof_dir, f"{self.pack_name}_{self.diagram_i+1}_steps.pkl")
-    def get_proof_fname(self):
-        return os.path.join(self.proof_dir, f"{self.pack_name}_{self.diagram_i+1}.hpf")
+    def get_proof_fname(self, diagram_i = None):
+        if diagram_i is None: diagram_i = self.diagram_i
+        return os.path.join(self.proof_dir, f"{self.pack_name}_{diagram_i+1}.hpf")
 
     def save_proof(self):
         os.makedirs(self.proof_dir, exist_ok = True)
@@ -624,8 +631,9 @@ if __name__ == "__main__":
                                      description='interactive prover of Hex templates',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     cmd_parser.add_argument("file_name", type=str, help="file with hex diagrams, expected 'hdg' or 'json'")
-    cmd_parser.add_argument("--start_level", type = int, default = 1, help="number of the diagram displayed at start")
+    cmd_parser.add_argument("--start_level", type = int, default = None, help="the first diagram displayed at start, by default first unsolved")
     cmd_parser.add_argument("--proof_dir", type = str, default = "./proofs", help="directory storing the proof files")
+    cmd_parser.add_argument("--auto", action = "store_true", help="enable automation at start")
     config = cmd_parser.parse_args()
     
     if config.file_name.endswith('.hdg'):
@@ -651,5 +659,6 @@ if __name__ == "__main__":
         pack_name,
         start_level = config.start_level,
         proof_dir = config.proof_dir,
+        auto_close_flag = config.auto,
     )
     Gtk.main()

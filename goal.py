@@ -511,7 +511,7 @@ class GoalEnv:
         self.initialize()
         for f,*args in steps:
             f = getattr(self, f)
-            f(*args)
+            assert f(*args)
 
 if __name__ == "__main__":
     from save_proof import export_proof_to_file

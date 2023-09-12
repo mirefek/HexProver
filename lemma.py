@@ -106,6 +106,33 @@ class Lemma:
             if homo:
                 self.thm = self.thm.map_nodes(homo)
 
+    def __hash__(self):
+        used = tuple(bool(x) for x in self.used)
+        up_adj = tuple(bool(x) for x in self.up_adj)
+        down_adj = tuple(bool(x) for x in self.down_adj)
+        reds_adj = frozenset(
+            tuple(bool(x) for x in red_adj)
+            for red_adj in self.reds_adj
+        )
+        return hash((self.main, used, up_adj, down_adj, reds_adj))
+
+    def __eq__(self):
+        if not isinstance(other, lemma): return False
+        if self.main != other.main: return False
+        if not (self.used == other.used).all(): return False
+        if not (self.up_adj == other.up_adj).all(): return False
+        if not (self.down_adj == other.down_adj).all(): return False
+        reds_adj = frozenset(
+            tuple(bool(x) for x in red_adj)
+            for red_adj in self.reds_adj
+        )
+        other_reds_adj = frozenset(
+            tuple(bool(x) for x in red_adj)
+            for red_adj in self.reds_adj
+        )
+        if reds_adj != other_reds_adj: return False
+        return True
+
     def get_thm(self, goal):
         if not (self.used <= goal.used).all(): return None
         if not (self.up_adj <= goal.up_adj).all(): return None
@@ -150,9 +177,13 @@ class LemmaDatabase:
     def __init__(self, main):
         self.main = main
         self.lemmata = []
+        self.lemmata_s = set() # only to avoid adding duplicities
 
     def add(self, proven):
-        self.lemmata.append(Lemma(self.main, proven))
+        if proven in self.lemmata_s: return
+        lemma = Lemma(self.main, proven)
+        self.lemmata.append(lemma)
+        self.lemmata_s.add(lemma)
 
     def find(self, goal, include_red):
         candidates = []
