@@ -116,7 +116,7 @@ class Lemma:
         )
         return hash((self.main, used, up_adj, down_adj, reds_adj))
 
-    def __eq__(self):
+    def __eq__(self, other):
         if not isinstance(other, lemma): return False
         if self.main != other.main: return False
         if not (self.used == other.used).all(): return False
