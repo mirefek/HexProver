@@ -1,0 +1,260 @@
+; Edge templates from Hex Wiki
+; https://www.hexwiki.net/index.php/Category:Edge_templates
+
+; Edge template II
+   A
+ .   .
+-------
+
+; Edge template III1b
+     .   A   .
+   .   .   .   .
+ .   .   X   .   .
+-------------------
+
+; Edge template III2a
+   A   O
+ .   .   .
+   .   .   .
+  -----------
+
+; Edge template III2b
+   A   .
+ O   .   .
+   .   .   .
+  -----------
+
+; Edge template III2c
+     A   O
+   .   X   .
+ .   .   .   .
+---------------
+
+; Edge template III2d
+     A
+   .   .
+ O   .   .
+-----------
+
+; Edge template III2e
+; original template is stronger -- both stones can be connected (at once)
+         A
+   O   .   .
+ .   .   .   .
+---------------
+
+; Edge template III2f
+; original template is stronger (as before)
+ A   .   O   .
+   .   .   .   .
+ .   .   .   .   .
+-------------------
+
+; Edge template III2a
+; original template is stronger (as before)
+   .   A
+ O   .   .
+   .   .   .
+  -----------
+
+; Edge template IV1a
+           A   .
+     .   .   .   .   .
+   .   .   .   .   .   .
+ .   .   .   .   .   .   .
+---------------------------
+
+; Edge template IV1b
+           .   A   .
+     .   .   .   .   .   .
+   .   .   .   X   .   .   .
+ .   .   .   .   .   .   .   .
+-------------------------------
+
+; Edge template IV1c
+                 .   .   .
+           .   A   .   .   .   .
+     .   .   .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .   .   .
+ .   .   X   .   .   .   .   .   .   .   .
+-------------------------------------------
+
+; Edge template IV1d
+         .   .   .
+       A   .   .   .   .
+     .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .
+ .   .   .  .   .   .   .   .   .
+-----------------------------------
+
+; Edge template IV2a
+    A   O
+  .   .   .
+    .   .   .
+  .   .   .   .
+ ---------------
+
+; Edge template IV2b
+   A   .
+ O   .   .   .
+   .   .   .   .
+ .   .   .   .   .
+-------------------
+
+; Edge template IV2c
+           A   O
+     .   .   X   .   .
+   .   .   .   .   .   .
+ .   .   .   .   .   .   .
+---------------------------
+
+; Edge template IV2d
+       A
+     .   .
+   O   .   .
+ .   .   .   .
+---------------
+
+; Edge template IV2e
+       A
+     .   .   .
+   O   .   .   .
+ .   .   X   .   .
+-------------------
+
+; Edge template IV2f
+       .   A
+     .   .   .
+   .   .   .   .
+ O   .   .   .   .
+-------------------
+
+; Edge template IV2g
+     .   A
+   .   .   .
+ .   .   .   .
+   O   .   .   .
+  ---------------
+
+; Edge template IV2h
+       .   A
+     .   .   .
+   .   .   .   .
+ .   .   O   .   .
+-------------------
+
+; Edge template IV2i
+   A   .
+ .   .   O
+   .   .   .
+ .   .   .   .
+---------------
+
+; Edge template IV2j
+   .   A
+ O   .   .
+   .   .   .
+ .   .   .   .
+---------------
+
+; Edge template IV2k
+               A
+     .   O   .   .
+   .   .   .   .   .
+ .   .   .   .   .   .
+-----------------------
+
+; Edge template IV2l
+       A   .   O
+     .   .   .   .
+   .   .   .   .   .
+ .   .   .   .   .   .
+-----------------------
+
+; Edge template IV2m
+       A   .   .   O
+     .   .   .   .   .
+   .   .   .   .   .
+ .   .   .   .   .   .
+-----------------------
+
+; Edge template IV2n
+; in fact, red can connect both
+       A   .   .   .   O
+     .   .   .   .   .   .
+   .   .   .   .   .   .   .
+ .   .   .   .   .   .   .   .
+-------------------------------
+
+; Edge template IV3a
+   A   O   O
+ .   .   .   .
+   .   .   .
+ .   .   .
+-----------
+
+; Edge template IV3b
+   A   O   O
+ .   .   X   .
+   .   .   .   .
+ .   .   .   .   .
+-------------------
+
+; Edge template IV3c
+               A
+         O   .   .
+   O   .   .   .   .
+ .   .   .   .   .   .
+-----------------------
+
+; Edge template V1a
+             .   A   .
+           .   .   .   .   .
+     .   .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .   .
+ .   .   .   .   .   .   .   .   .   .
+---------------------------------------
+
+; Edge template V1b
+           .   .   .
+         A   .   .   .   .   .   .   .
+       .   .   .   .   .   .   .   .   .   .
+     .   .   .   .   .   .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .   .   .   .   .   .
+ .   .   .   .   .   .   .   .   .   .   .   .   .   .
+-------------------------------------------------------
+
+; Edge template V1c
+                   .   .   .
+             A   .   .   .   .   .   .   .   .
+           .   .   .   .   .   .   .   .   .   .   .
+     .   .   .   .   .   .   .   .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
+ .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
+---------------------------------------------------------------
+
+; Edge template V2c
+     .   A
+   .   .   .
+ .   .   .   .
+   O   .   .   .
+ .   .   .   .   .
+--------------------
+
+; Edge template VI1a
+                       .   A   .
+                 .   .   .   .   .   .
+           .   .   .   .   .   .   .   .   .
+     .   .   .   .   .   .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .   .   .   .   .   .
+ .   .   .   .   .   .   .   .   .   .   .   .   .   .
+-------------------------------------------------------
+
+; Edge template VI2a
+           .   A   O   .
+         .   .   .   .   .
+       .   .   .   .   .   .
+     .   .   .   .   .   .   .
+   .   .   .   .   .   .   .   .
+ .   .   .   .   .   .   .   .   .
+-----------------------------------
