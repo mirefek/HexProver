@@ -65,6 +65,7 @@ class HexDiagram:
             'down_edge' : self.down_edge,
             'extra_edges' : self.extra_edges,
         }
+        self.comments = []
 
     def add_theorem(self, thm):
         if thm.clause <= self.clause:
@@ -303,11 +304,20 @@ class HexDiagram:
         diagrams = []
         lines = []
         start = 1
+        comments = []
+        last_diagram = None
         with open(fname) as f:
             for line_i,line in enumerate(f):
-                if ';' in line: line = line[:line.index(';')]
-                elif line[-1] == '\n': line = line[:-1]
+                if ';' in line:
+                    semicolon_i = line.index(';')
+                    comment = line[semicolon_i+1:].strip()
+                    line = line[:semicolon_i].strip()
+                else:
+                    if line[-1] == '\n': line = line[:-1]
+                    comment = None
+
                 if line.strip():
+                    if comment is not None: comments.append(comment)
                     lines.append(line)
                 else:
                     if lines:
@@ -316,8 +326,21 @@ class HexDiagram:
                         except:
                             print(f"Error on lines {start} -- {line_i-1}")
                             raise
+                        diagram.comments = comments
+                        last_diagram = diagram
+                        comments = []
                         diagrams.append(diagram)
                         lines = []
+                    else:
+                        if comment is None:
+                            if last_diagram is not None:
+                                if not last_diagram.comments:
+                                    last_diagram.comments.append("")
+                                last_diagram.comments.extend(comments)
+                            comments = []
+                            last_diagram = None
+                        else:
+                            comments.append(comment)
                     start = line_i+1
         if lines:
             try:
@@ -325,6 +348,7 @@ class HexDiagram:
             except:
                 print(f"Error on lines {start} -- {line_i}")
                 raise
+            diagram.comments = comments
             diagrams.append(diagram)
         return diagrams
 

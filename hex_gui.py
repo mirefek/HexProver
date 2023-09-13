@@ -212,9 +212,12 @@ class HexGUI(Gtk.Window):
         if diagram_i < 0: diagram_i = 0
         if diagram_i >= len(self.diagrams): diagram_i = len(self.diagrams)-1
         if diagram_i == self.diagram_i: return
-        self.level_label.set_label(f"Problem {diagram_i+1}")
-        self.diagram_i = diagram_i
         diagram = self.diagrams[diagram_i]
+        label_str = f"{diagram_i+1} / {len(self.diagrams)}"
+        if diagram.comments and diagram.comments[0]:
+            label_str += "  --  "+diagram.comments[0]
+        self.level_label.set_label(label_str)
+        self.diagram_i = diagram_i
         self.strategy_viewer = None
         self.env = GoalEnv(diagram, finished_trigger = self.finished_trigger)
         proof_fname = self.get_proof_fname()
@@ -643,6 +646,8 @@ if __name__ == "__main__":
     elif config.file_name.endswith('.json'):
         suffix = '.json'
         puzzles = HexPuzzle.parse_file(config.file_name)
+        for i,puzzle in enumerate(puzzles):
+            puzzle.diagram.comments.append(f"Puzzle {i+1}")
         diagrams = [
             puzzle.diagram
             for puzzle in puzzles
