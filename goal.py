@@ -217,7 +217,7 @@ class BuildCases:
 
     def make_red_move(self, pos):
         assert not self.waiting_for_thm
-        assert self.main.available_mask[pos]
+        assert self.main.empty_mask[pos]
         node = int(self.main.pos_to_node[pos])
         assert node != self._cur_blue
         self._cur_red = node
@@ -228,8 +228,8 @@ class BuildCases:
 
     def make_blue_move(self, pos):
         assert not self.waiting_for_thm
-        node = int(self.main.pos_to_node[pos])
         assert self.main.empty_mask[pos]
+        node = int(self.main.pos_to_node[pos])
         if self._remaining_blue:
             assert node in self._remaining_blue
         self._cur_blue = node
@@ -358,18 +358,18 @@ class GoalEnv:
 
     def split_node(self, pos, first_connect_up = True):
         pos = self.to_pos(pos)
-        self.steps.append(("split_node", pos, first_connect_up))
         assert self.waiting_for_thm
         self.stack.append(BuildSplit(self.cur, pos, first_connect_up))
+        self.steps.append(("split_node", pos, first_connect_up))
         self._finish()
         return True
 
     def internal_connection(self, pos1, pos2):
         pos1 = self.to_pos(pos1)
         pos2 = self.to_pos(pos2)
-        self.steps.append(("internal_connection", pos1, pos2))
         assert self.waiting_for_thm
         self.stack.append(InternalConnection(self.cur, pos1, pos2))
+        self.steps.append(("internal_connection", pos1, pos2))
         self._finish()
         return True
 
@@ -384,17 +384,18 @@ class GoalEnv:
 
     def make_red_move(self, pos):
         pos = self.to_pos(pos)
-        self.steps.append(("make_red_move", pos))
         assert not self.finished
+        assert self.main.empty_mask[pos]
         self._get_cases_builder().make_red_move(pos)
+        self.steps.append(("make_red_move", pos))
         self._finish()
         return True
 
     def make_blue_move(self, pos):
         pos = self.to_pos(pos)
-        self.steps.append(("make_blue_move", pos))
         assert not self.finished
         self._get_cases_builder().make_blue_move(pos)
+        self.steps.append(("make_blue_move", pos))
         self._finish()
         return True
 
@@ -415,8 +416,8 @@ class GoalEnv:
             return False
         thm = self.lemma_database.find(self.cur, include_red = include_red)
         if thm is not None:
-            self.steps.append(("close_with_lemma", include_red))
             self.cur.add_theorem(thm)
+            self.steps.append(("close_with_lemma", include_red))
             self._finish(save_first = False)
             return True
         else:
@@ -448,11 +449,11 @@ class GoalEnv:
         nodes = [node for score, node in nodes]
         if self.waiting_for_thm:
             if len(nodes) < 2: return False
-            self.steps.append(("close_with_fork",))
             node1, node2 = nodes[:2]
             self.cur.add_theorem(self.fork.map_nodes([
                 up_node, node1, node2, down_node
             ]))
+            self.steps.append(("close_with_fork",))
             self._finish(save_first = False)
             return True
 
@@ -509,9 +510,14 @@ class GoalEnv:
         with open(fname, 'rb') as f:
             steps = pickle.load(f)
         self.initialize()
-        for f,*args in steps:
-            f = getattr(self, f)
-            assert f(*args)
+        for i,(f,*args) in enumerate(steps):
+            # print(f, args)
+            try:
+                f = getattr(self, f)
+                assert f(*args)
+            except:
+                print(f"Warning: Reconstruction failed, only {i} / {len(steps)} steps were recovered")
+                break
 
 if __name__ == "__main__":
     from save_proof import export_proof_to_file
@@ -530,24 +536,11 @@ if __name__ == "__main__":
 
     board6 = make_board(6,(2,3))
 
-    diagram = HexDiagram.parse("""
-    -------------------
-     .   .   .   .   . 
-       .   X   O   .   . 
-         .   .   .   .   . 
-           .   O   .   V 
-    """)
+    diagrams = HexDiagram.parse_file("hexwiki_templates.hdg")
+    diagram = diagrams[35]
     env = GoalEnv(diagram)
-    env.make_red_move((1, 4))
-    env.split_node((1, 4), True)
-    assert env.pop_stack()
-    env.split_node((1, 4), False)
-    assert env.close_with_fork()
-    env.internal_connection((1, 2), (3, 1))
-    assert env.close_with_fork()
-    env.split_node((1, 2), True)
-    assert env.close_with_fork()
-    assert env.close_with_fork()
+    env.load_steps("proofs/hexwiki_templates_36_steps.pkl")
+    # env.make_red_move((2,8))
 
     if env.finished:
         print("Problem solved!")

@@ -206,7 +206,11 @@ class HexGUI(Gtk.Window):
         print("Steps saved")
     def load_steps(self):
         if self.env.finished: return
-        self.env.load_steps(self.get_steps_fname())
+        fname = self.get_steps_fname()
+        if os.path.exists(fname):
+            self.env.load_steps(fname)
+        else:
+            print("No saved position")
 
     def set_level(self, diagram_i):
         if diagram_i < 0: diagram_i = 0
