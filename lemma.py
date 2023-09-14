@@ -128,7 +128,7 @@ class Lemma:
         )
         other_reds_adj = frozenset(
             tuple(bool(x) for x in red_adj)
-            for red_adj in self.reds_adj
+            for red_adj in other.reds_adj
         )
         if reds_adj != other_reds_adj: return False
         return True
