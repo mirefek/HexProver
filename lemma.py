@@ -190,12 +190,12 @@ class LemmaDatabase:
 
         # print(f"searching among {len(self.lemmata)} lemmata")
         goal = Lemma(self.main, goal, is_goal = True, include_red = include_red)
-        for lemma in self.lemmata:
+        for lemma_i,lemma in enumerate(self.lemmata):
             thm = lemma.get_thm(goal)
-            if thm is not None: candidates.append(thm)
+            if thm is not None: candidates.append((thm, lemma_i))
         if not candidates:
-            return None
+            return None,None
         return min(
             candidates,
-            key = lambda thm: (len(thm.strategy.nodes), len(thm.clause.assumptions))
+            key = lambda thm_i: (len(thm_i[0].strategy.nodes), len(thm_i[0].clause.assumptions))
         )

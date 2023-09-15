@@ -411,10 +411,11 @@ class GoalEnv:
         self._finish()
         return True
 
-    def close_with_lemma(self, include_red):
+    def close_with_lemma(self, include_red, expected_lemma_i = None):
         if not self.waiting_for_thm:
             return False
-        thm = self.lemma_database.find(self.cur, include_red = include_red)
+        thm,lemma_i = self.lemma_database.find(self.cur, include_red = include_red)
+        if expected_lemma_i is not None: assert lemma_i == expected_lemma_i
         if thm is not None:
             self.cur.add_theorem(thm)
             self.steps.append(("close_with_lemma", include_red))
@@ -462,8 +463,7 @@ class GoalEnv:
             for node in nodes:
                 [pos] = self.cur.components[node]
                 if self.last._remaining_blue is not None and self.last.main.pos_to_node[pos] not in self.last._remaining_blue:
-                    self.last.make_red_move(pos)
-                    self._finish()
+                    self.make_red_move(pos)
                     return True
             return False
 
@@ -502,6 +502,11 @@ class GoalEnv:
             if self.finished_trigger is not None:
                 self.finished_trigger()
 
+        # self.steps.append(("check_stack_size", len(self.stack)))
+
+    def check_stack_size(self, size):
+        return len(self.stack) == size
+
     def save_steps(self, fname):
         with open(fname, 'wb') as f:
             pickle.dump(self.steps, f)
@@ -510,13 +515,14 @@ class GoalEnv:
         with open(fname, 'rb') as f:
             steps = pickle.load(f)
         self.initialize()
-        for i,(f,*args) in enumerate(steps):
-            # print(f, args)
+        for i,(f_name,*args) in enumerate(steps):
+            # print(f_name, args)
             try:
-                f = getattr(self, f)
+                f = getattr(self, f_name)
                 assert f(*args)
             except:
                 print(f"Warning: Reconstruction failed, only {i} / {len(steps)} steps were recovered")
+                print(f"couldn't apply step: {f_name}({', '.join(map(str, args))})")
                 break
 
 if __name__ == "__main__":
