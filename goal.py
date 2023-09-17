@@ -1,6 +1,7 @@
 from prop_logic import AtomConnected
 from hex_diagram import *
 from lemma import LemmaDatabase
+from save_proof import export_proof_to_file
 import pickle
 
 class BuildSplit:
@@ -418,7 +419,7 @@ class GoalEnv:
         if expected_lemma_i is not None: assert lemma_i == expected_lemma_i
         if thm is not None:
             self.cur.add_theorem(thm)
-            self.steps.append(("close_with_lemma", include_red))
+            self.steps.append(("close_with_lemma", include_red, lemma_i))
             self._finish(save_first = False)
             return True
         else:
@@ -502,7 +503,7 @@ class GoalEnv:
             if self.finished_trigger is not None:
                 self.finished_trigger()
 
-        # self.steps.append(("check_stack_size", len(self.stack)))
+        self.steps.append(("check_stack_size", len(self.stack)))
 
     def check_stack_size(self, size):
         return len(self.stack) == size
@@ -510,6 +511,9 @@ class GoalEnv:
     def save_steps(self, fname):
         with open(fname, 'wb') as f:
             pickle.dump(self.steps, f)
+
+    def save_lemmata(self, fname):
+        export_proof_to_file([lemma.thm for lemma in self.lemma_database.lemmata], fname)
 
     def load_steps(self, fname):
         with open(fname, 'rb') as f:
@@ -523,6 +527,7 @@ class GoalEnv:
             except:
                 print(f"Warning: Reconstruction failed, only {i} / {len(steps)} steps were recovered")
                 print(f"couldn't apply step: {f_name}({', '.join(map(str, args))})")
+                # raise
                 break
 
 if __name__ == "__main__":
@@ -545,7 +550,7 @@ if __name__ == "__main__":
     diagrams = HexDiagram.parse_file("hexwiki_templates.hdg")
     diagram = diagrams[35]
     env = GoalEnv(diagram)
-    env.load_steps("proofs/hexwiki_templates_36_steps.pkl")
+    env.load_steps("proofs/test_6_steps_part.pkl")
     # env.make_red_move((2,8))
 
     if env.finished:

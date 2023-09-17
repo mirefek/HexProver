@@ -169,6 +169,8 @@ class HexGUI(Gtk.Window):
 
     def get_steps_fname(self):
         return os.path.join(self.proof_dir, f"{self.pack_name}_{self.diagram_i+1}_steps.pkl")
+    def get_lemmata_fname(self):
+        return os.path.join(self.proof_dir, f"{self.pack_name}_{self.diagram_i+1}_lemmata.hpf")
     def get_proof_fname(self, diagram_i = None):
         if diagram_i is None: diagram_i = self.diagram_i
         return os.path.join(self.proof_dir, f"{self.pack_name}_{diagram_i+1}.hpf")
@@ -203,11 +205,13 @@ class HexGUI(Gtk.Window):
     def save_steps(self):
         if not self.env.steps: return
         self.env.save_steps(self.get_steps_fname())
+        self.env.save_lemmata(self.get_lemmata_fname())
         print("Steps saved")
     def load_steps(self):
         if self.env.finished: return
         fname = self.get_steps_fname()
         if os.path.exists(fname):
+            print("Loading steps..")
             self.env.load_steps(fname)
         else:
             print("No saved position")

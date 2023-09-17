@@ -4,6 +4,8 @@ def get_types(rule, numargs):
     if rule == core.build_case_strategy:
         assert numargs > 0 and numargs % 2 == 0
         return [int, core.Proof]*(numargs // 2)
+    elif rule == final_pack:
+        return [core.Proof]*numargs
     else:
         varnames = rule.__code__.co_varnames
         varnames = varnames[:rule.__code__.co_argcount]
@@ -60,7 +62,8 @@ def export_proof_step(proof, proven):
     return ' ; '.join([proof.rule.__name__]+args)
 def load_proof_step(line, proven):
     rule, *args = line.split(' ; ')
-    rule = getattr(core, rule)
+    if rule == "final_pack": rule = final_pack
+    else: rule = getattr(core, rule)
     types = get_types(rule, len(args))
     args = tuple(parse_proof_arg(t, arg, proven) for t,arg in zip(types, args))
     return rule(*args)
@@ -93,9 +96,20 @@ def load_proof(stream, proven = None): # proven : name -> Proof
         proven[name] = load_proof_step(body, proven)
     return proven["theorem"]
 
+def final_pack(*args):
+    return args
+
 def export_proof_to_file(thm, fname):
     if isinstance(thm, core.Theorem): proof = thm.proof
     elif isinstance(thm, core.Proof): proof = thm
+    elif isinstance(thm, (list, tuple)):
+        proofs = []
+        for lemma in thm:
+            if isinstance(lemma, core.Theorem):
+                proofs.append(lemma.proof)
+            else:
+                proofs.append(lemma)
+        proof = core.Proof(final_pack, proofs)
     with open(fname, 'w') as f:
         export_proof(proof, f)
 def load_proof_from_file(fname):
