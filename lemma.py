@@ -167,19 +167,6 @@ class Lemma:
         homo[self.up_idx] = goal.up_idx
         homo[self.down_idx] = goal.down_idx
 
-        # print("cur")
-        # print(self.cur.to_str('enum'))
-        # print(homo)
-        # print(self.thm)
-        # print(np.stack([
-        #     self.used.astype(int),
-        #     goal.used.astype(int),
-        #     self.used_idx,
-        #     goal.used_idx,
-        # ]))
-        # print(self.reds_idx)
-        # print(goal.reds_idx)
-
         thm = self.thm.map_nodes(homo, conflict_to_red = True)
         thm = thm.remove_reflexivity_assumptions()
         return thm
@@ -191,8 +178,8 @@ class LemmaDatabase:
         self.lemmata_s = set() # only to avoid adding duplicities
 
     def add(self, proven):
-        if proven in self.lemmata_s: return
         lemma = Lemma(self.main, proven)
+        if lemma in self.lemmata_s: return
         self.lemmata.append(lemma)
         self.lemmata_s.add(lemma)
 
@@ -204,15 +191,6 @@ class LemmaDatabase:
         for lemma_i,lemma in enumerate(self.lemmata):
             thm = lemma.get_thm(goal)
             if thm is not None: candidates.append((thm, lemma_i))
-        candidates_i = [lemma_i for thm, lemma_i in candidates]
-        candidates_i_focused = [9, 25, 67, 119, 207, 210, 214, 221, 227, 230, 1413]
-        # print("Candidates:", candidates_i)
-        if candidates_i == candidates_i_focused and False:
-            print("HERE!", len(candidates))
-            for thm, lemma_i in candidates:
-                print(f" {lemma_i} -> {len(thm.strategy.nodes)}, {len(thm.clause.assumptions)}")
-                proof_history = collect_proof_history(thm.proof)
-                print("proof_history:", set(x.rule.__name__ for x in proof_history))
         if not candidates:
             return None,None
         res = min(
